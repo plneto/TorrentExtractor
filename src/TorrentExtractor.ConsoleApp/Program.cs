@@ -22,7 +22,6 @@ namespace TorrentExtractor.ConsoleApp
         private static void Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
 
             Configuration = builder.Build();
