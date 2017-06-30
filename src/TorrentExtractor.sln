@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.ConsoleApp", "TorrentExtractor.ConsoleApp\TorrentExtractor.ConsoleApp.csproj", "{53FF0EC2-81B0-4CE1-889D-71591A81D18E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Core", "TorrentExtractor.Core\TorrentExtractor.Core.csproj", "{73ABDECC-65B2-45FA-90F6-255DA39453AD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E2137756-C096-4576-8DDE-4CDF8CE0F673}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentExtractor.Tests", "TorrentExtractor.Tests\TorrentExtractor.Tests.csproj", "{31109E2A-F66B-407F-AF83-7046E3E0FA5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53FF0EC2-81B0-4CE1-889D-71591A81D18E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53FF0EC2-81B0-4CE1-889D-71591A81D18E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53FF0EC2-81B0-4CE1-889D-71591A81D18E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53FF0EC2-81B0-4CE1-889D-71591A81D18E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73ABDECC-65B2-45FA-90F6-255DA39453AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73ABDECC-65B2-45FA-90F6-255DA39453AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73ABDECC-65B2-45FA-90F6-255DA39453AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73ABDECC-65B2-45FA-90F6-255DA39453AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31109E2A-F66B-407F-AF83-7046E3E0FA5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31109E2A-F66B-407F-AF83-7046E3E0FA5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31109E2A-F66B-407F-AF83-7046E3E0FA5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31109E2A-F66B-407F-AF83-7046E3E0FA5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{31109E2A-F66B-407F-AF83-7046E3E0FA5D} = {E2137756-C096-4576-8DDE-4CDF8CE0F673}
+	EndGlobalSection
+EndGlobal
