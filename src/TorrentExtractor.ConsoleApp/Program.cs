@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Autofac;
 using CommandLine;
 using Serilog;
@@ -12,6 +11,7 @@ using TorrentExtractor.ConsoleApp.Autofac;
 using TorrentExtractor.ConsoleApp.Helpers;
 using TorrentExtractor.ConsoleApp.Infrastructure;
 using TorrentExtractor.ConsoleApp.Models;
+using TorrentExtractor.Core.Settings;
 
 namespace TorrentExtractor.ConsoleApp
 {
@@ -25,7 +25,7 @@ namespace TorrentExtractor.ConsoleApp
                 .AddJsonFile("appsettings.json");
 
             Configuration = builder.Build();
-
+            
             var container = InitContainer();
 
             var torrentSettings = container.Resolve<TorrentSettings>();

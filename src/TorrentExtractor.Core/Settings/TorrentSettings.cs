@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TorrentExtractor.Core.Models
+namespace TorrentExtractor.Core.Settings
 {
     public class TorrentSettings
     {

@@ -3,6 +3,7 @@ using MimeKit;
 using Serilog;
 using TorrentExtractor.ConsoleApp.Models;
 using TorrentExtractor.Core.Models;
+using TorrentExtractor.Core.Settings;
 
 namespace TorrentExtractor.ConsoleApp.Infrastructure
 {

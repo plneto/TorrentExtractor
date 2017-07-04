@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Autofac;
+﻿using Autofac;
 using Microsoft.Extensions.Configuration;
-using TorrentExtractor.Core.Models;
+using TorrentExtractor.Core.Settings;
 
 namespace TorrentExtractor.ConsoleApp.Autofac
 {
@@ -18,57 +17,25 @@ namespace TorrentExtractor.ConsoleApp.Autofac
         {
             base.Load(builder);
 
-            builder.Register(ctx => new TorrentSettings
-            {
-                TvShowsLabel = _configuration["TorrentSettings:TvShowsLabel"],
-                MoviesLabel = _configuration["TorrentSettings:MoviesLabel"],
-                DefaultLabel = _configuration["TorrentSettings:DefaultLabel"],
-                TvShowsDirectory = _configuration["TorrentSettings:TvShowsDirectory"],
-                MoviesDirectory = _configuration["TorrentSettings:MoviesDirectory"],
-                SupportedFileFormats = ParseArray("TorrentSettings:SupportedFileFormats"),
-                DownloadsDirectory = _configuration["TorrentSettings:DownloadsDirectory"]
-            })
-            .AsSelf()
-            .SingleInstance();
+            var torrentSettings = new TorrentSettings();
+            var emailSettings = new EmailSettings();
+            var loggingSettings = new LoggingSettings();
 
-            builder.Register(ctx => new EmailSettings
-            {
-                ToAddresses = ParseArray("EmailSettings:ToAddresses"),
-                BccAddresses = ParseArray("EmailSettings:BccAddresses"),
-                SmtpUsername = _configuration["EmailSettings:SmtpUsername"],
-                SmtpPassword = _configuration["EmailSettings:SmtpPassword"],
-                SmtpServerAddress = _configuration["EmailSettings:SmtpServerAddress"],
-                SmtpServerPort = int.Parse(_configuration["EmailSettings:SmtpServerPort"]),
-                SmtpUseSsl = bool.Parse(_configuration["EmailSettings:SmtpUseSsl"]),
-                SenderName = _configuration["EmailSettings:SenderName"],
-                SenderAddress = _configuration["EmailSettings:SenderAddress"],
-                FromPassword = _configuration["EmailSettings:FromPassword"]
-            })
+            _configuration.GetSection(nameof(TorrentSettings)).Bind(torrentSettings);
+            _configuration.GetSection(nameof(EmailSettings)).Bind(emailSettings);
+            _configuration.GetSection(nameof(LoggingSettings)).Bind(loggingSettings);
+
+            builder.Register(ctx => torrentSettings)
                 .AsSelf()
                 .SingleInstance();
 
-            builder.Register(ctx => new LoggingSettings
-            {
-                LogFilePath = _configuration["LoggingSettings:LogFilePath"]
-            })
-            .AsSelf()
-            .SingleInstance();
-        }
+            builder.Register(ctx => emailSettings)
+                .AsSelf()
+                .SingleInstance();
 
-        private List<string> ParseArray(string key)
-        {
-            var list = new List<string>();
-
-            var count = 0;
-            string value;
-
-            while ((value = _configuration[$"{key}:{count}"]) != null)
-            {
-                list.Add(value);
-                count++;
-            }
-
-            return list;
+            builder.Register(ctx => loggingSettings)
+                .AsSelf()
+                .SingleInstance();
         }
     }
 }
