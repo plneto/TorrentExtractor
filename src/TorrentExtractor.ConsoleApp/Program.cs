@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using CommandLine;
 using Serilog;
@@ -49,7 +51,20 @@ namespace TorrentExtractor.ConsoleApp
                 var options = Parser.Default.ParseArguments<TorrentOptions>(args);
 
                 if (options.Tag == ParserResultType.NotParsed)
+                {
+                    logger.Error("Error parsing arguments");
+
+                    var errors = new List<Error>();
+                    options.WithNotParsed(x => errors = x.ToList());
+
+                    foreach (var error in errors)
+                    {
+                        logger.Error(error.ToString());
+                    }
+
+                    logger.Information("Program Exited");
                     return;
+                }
 
                 var torrentOptions = new TorrentOptions();
 
