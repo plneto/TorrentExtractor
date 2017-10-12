@@ -2,7 +2,6 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using Serilog;
 using TorrentExtractor.ConsoleApp.Models;
-using TorrentExtractor.Core.Models;
 using TorrentExtractor.Core.Settings;
 
 namespace TorrentExtractor.ConsoleApp.Infrastructure
@@ -33,9 +32,12 @@ namespace TorrentExtractor.ConsoleApp.Infrastructure
                 message.To.Add(new MailboxAddress(toAddress));
             }
 
-            foreach (var bccAddress in _settings.BccAddresses)
+            if (_settings.BccAddresses != null)
             {
-                message.Bcc.Add(new MailboxAddress(bccAddress));
+                foreach (var bccAddress in _settings.BccAddresses)
+                {
+                    message.Bcc.Add(new MailboxAddress(bccAddress));
+                }
             }
 
             var body = new TextPart { Text = email.Body};

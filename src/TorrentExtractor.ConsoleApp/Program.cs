@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Autofac;
 using CommandLine;
@@ -72,32 +73,34 @@ namespace TorrentExtractor.ConsoleApp
 
                 var torrent = new Torrent
                 {
-                    IsTvShow = torrentOptions.Label == torrentSettings.TvShowsLabel || (string.IsNullOrWhiteSpace(torrentOptions.Label) && torrentSettings.DefaultLabel == torrentSettings.TvShowsLabel),
-                    Path = torrentOptions.SourceDirectory,
-                    IsSingleFile = torrentOptions.SourceDirectory == torrentSettings.DownloadsDirectory
+                    IsTvShow = torrentOptions.Category == torrentSettings.TvShowsCategory 
+                        || (string.IsNullOrWhiteSpace(torrentOptions.Category) 
+                        && torrentSettings.DefaultCategory == torrentSettings.TvShowsCategory),
+                    Path = torrentOptions.ContentPath,
+                    IsSingleFile = IsFile(torrentOptions.ContentPath)
                 };
-
+                
                 var destinationFolder = torrent.IsTvShow
                     ? torrentSettings.TvShowsDirectory
                     : torrentSettings.MoviesDirectory;
                 
                 if (torrent.IsSingleFile)
                 {
-                    if (FileHelper.IsMediaFile(torrentOptions.FileName, torrentSettings.SupportedFileFormats))
-                        fileHandler.CopyFile(torrentOptions.FileName, destinationFolder, torrent);
+                    if (FileHelper.IsMediaFile(torrentOptions.ContentPath, torrentSettings.SupportedFileFormats))
+                        fileHandler.CopyFile(torrentOptions.ContentPath, destinationFolder, torrent);
                     else
-                        fileHandler.ExtractFile(torrentOptions.FileName, destinationFolder, torrent);
+                        fileHandler.ExtractFile(torrentOptions.ContentPath, destinationFolder, torrent);
                 }
                 else
                 {
-                    var compressedFiles = fileFinder.FindCompressedFiles(torrentOptions.SourceDirectory);
+                    var compressedFiles = fileFinder.FindCompressedFiles(torrentOptions.ContentPath);
 
                     foreach (var file in compressedFiles)
                     {
                         fileHandler.ExtractFile(file, destinationFolder, torrent);
                     }
 
-                    var mediaFiles = fileFinder.FindMediaFiles(torrentOptions.SourceDirectory, torrentSettings.SupportedFileFormats);
+                    var mediaFiles = fileFinder.FindMediaFiles(torrentOptions.ContentPath, torrentSettings.SupportedFileFormats);
 
                     foreach (var file in mediaFiles)
                     {
@@ -105,9 +108,9 @@ namespace TorrentExtractor.ConsoleApp
                     }
                 }
 
-                var downloadName = string.IsNullOrWhiteSpace(torrentOptions.Title)
-                    ? torrentOptions.SourceDirectory.Substring(torrentOptions.SourceDirectory.LastIndexOf("\\", StringComparison.Ordinal) + 1)
-                    : torrentOptions.Title;
+                var downloadName = string.IsNullOrWhiteSpace(torrentOptions.TorrentName)
+                    ? torrentOptions.ContentPath.Substring(torrentOptions.ContentPath.LastIndexOf("\\", StringComparison.Ordinal) + 1)
+                    : torrentOptions.TorrentName;
 
                 notify.SendEmail(new Email
                 {
@@ -134,6 +137,13 @@ namespace TorrentExtractor.ConsoleApp
             builder.RegisterModule(new NotificationModule());
 
             return builder.Build();
+        }
+
+        private static bool IsFile(string path)
+        {
+            var attr = File.GetAttributes(path);
+
+            return !attr.HasFlag(FileAttributes.Directory);
         }
     }
 }
