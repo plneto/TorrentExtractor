@@ -39,7 +39,7 @@ namespace TorrentExtractor.ConsoleApp.Models
         public int NumberOfFiles { get; set; }
 
         [Option('z', "torrentsize", HelpText = "Torrent size (bytes)")]
-        public int TorrentSize { get; set; }
+        public long TorrentSize { get; set; }
 
         [Option('t', "currenttracker", HelpText = "Current tracker")]
         public string CurrentTracker { get; set; }
