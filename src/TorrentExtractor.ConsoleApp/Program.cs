@@ -45,7 +45,7 @@ namespace TorrentExtractor.ConsoleApp
                 args = ArgsHelper.RemoveEmptyArgs(args);
 
                 if (args.Length > 0)
-                    logger.Debug("Args: {0}", string.Join(", ", args));
+                    logger.Debug("Args: {0}", string.Join(" ", args));
                 else
                     logger.Information("No args provided");
                 
