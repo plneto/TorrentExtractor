@@ -8,7 +8,6 @@ using Serilog;
 using TorrentExtractor.Core.Autofac;
 using TorrentExtractor.Core.Helpers;
 using TorrentExtractor.Core.Infrastructure;
-using TorrentExtractor.Core.Models;
 using Microsoft.Extensions.Configuration;
 using TorrentExtractor.ConsoleApp.Autofac;
 using TorrentExtractor.ConsoleApp.Helpers;
@@ -28,7 +27,7 @@ namespace TorrentExtractor.ConsoleApp
                 .AddJsonFile("appsettings.json");
 
             Configuration = builder.Build();
-            
+
             var container = InitContainer();
 
             var torrentSettings = container.Resolve<TorrentSettings>();
@@ -48,7 +47,7 @@ namespace TorrentExtractor.ConsoleApp
                     logger.Debug("Args: {0}", string.Join(" ", args));
                 else
                     logger.Information("No args provided");
-                
+
                 var options = Parser.Default.ParseArguments<TorrentOptions>(args);
 
                 if (options.Tag == ParserResultType.NotParsed)
@@ -71,25 +70,24 @@ namespace TorrentExtractor.ConsoleApp
 
                 options.WithParsed(x => torrentOptions = x);
 
-                var torrent = new Torrent
-                {
-                    IsTvShow = torrentOptions.Category == torrentSettings.TvShowsCategory 
-                        || (string.IsNullOrWhiteSpace(torrentOptions.Category) 
-                        && torrentSettings.DefaultCategory == torrentSettings.TvShowsCategory),
-                    Path = torrentOptions.ContentPath,
-                    IsSingleFile = IsFile(torrentOptions.ContentPath)
-                };
-                
-                var destinationFolder = torrent.IsTvShow
+                var isTvShow = torrentOptions.Category == torrentSettings.TvShowsCategory
+                               || (string.IsNullOrWhiteSpace(torrentOptions.Category)
+                                   && torrentSettings.DefaultCategory == torrentSettings.TvShowsCategory);
+
+                var path = torrentOptions.ContentPath;
+
+                var isSingleFile = IsFile(torrentOptions.ContentPath);
+
+                var destinationFolder = isTvShow
                     ? torrentSettings.TvShowsDirectory
                     : torrentSettings.MoviesDirectory;
-                
-                if (torrent.IsSingleFile)
+
+                if (isSingleFile)
                 {
                     if (FileHelper.IsMediaFile(torrentOptions.ContentPath, torrentSettings.SupportedFileFormats))
-                        fileHandler.CopyFile(torrentOptions.ContentPath, destinationFolder, torrent);
+                        fileHandler.CopyFile(torrentOptions.ContentPath, destinationFolder, isTvShow);
                     else
-                        fileHandler.ExtractFile(torrentOptions.ContentPath, destinationFolder, torrent);
+                        fileHandler.ExtractFile(torrentOptions.ContentPath, destinationFolder, isTvShow);
                 }
                 else
                 {
@@ -97,14 +95,14 @@ namespace TorrentExtractor.ConsoleApp
 
                     foreach (var file in compressedFiles)
                     {
-                        fileHandler.ExtractFile(file, destinationFolder, torrent);
+                        fileHandler.ExtractFile(file, destinationFolder, isTvShow);
                     }
 
                     var mediaFiles = fileFinder.FindMediaFiles(torrentOptions.ContentPath, torrentSettings.SupportedFileFormats);
 
                     foreach (var file in mediaFiles)
                     {
-                        fileHandler.CopyFile(file, destinationFolder, torrent);
+                        fileHandler.CopyFile(file, destinationFolder, isTvShow);
                     }
                 }
 
@@ -116,7 +114,7 @@ namespace TorrentExtractor.ConsoleApp
                 {
                     Recipients = emailSettings.ToAddresses,
                     Subject = $"Download Finished - {downloadName}",
-                    Body = $"File(s) moved to {(torrent.IsTvShow ? torrentSettings.TvShowsDirectory : torrentSettings.MoviesDirectory)}"
+                    Body = $"File(s) moved to {(isTvShow ? torrentSettings.TvShowsDirectory : torrentSettings.MoviesDirectory)}"
                 });
             }
             catch (Exception ex)

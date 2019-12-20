@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Serilog;
-using TorrentExtractor.Core.Models;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives;
 
@@ -18,13 +17,13 @@ namespace TorrentExtractor.Core.Infrastructure
             _logger = logger;
         }
 
-        public bool CopyFile(string fileOrigin, string destination, Torrent torrentDetails)
+        public bool CopyFile(string fileOrigin, string destination, bool isTvShow)
         {
             _logger.Debug("Enter CopyFile");
             _logger.Debug($"Origin: {fileOrigin}, Destination: {destination}");
 
-            var formattedFileName = torrentDetails.IsTvShow
-                ?_fileFormatter.FormatTvShowFileName(Path.GetFileName(fileOrigin))
+            var formattedFileName = isTvShow
+                ? _fileFormatter.FormatTvShowFileName(Path.GetFileName(fileOrigin))
                 : Path.GetFileName(fileOrigin);
 
             var success = false;
@@ -49,7 +48,7 @@ namespace TorrentExtractor.Core.Infrastructure
             return success;
         }
 
-        public bool ExtractFile(string file, string destinationDirectory, Torrent torrentDetails)
+        public bool ExtractFile(string file, string destinationDirectory, bool isTvShow)
         {
             _logger.Debug("Enter ExtractFile");
 
@@ -63,9 +62,9 @@ namespace TorrentExtractor.Core.Infrastructure
                     {
                         archiveEntry.WriteToDirectory(destinationDirectory);
                         _logger.Debug($"File {file} extracted to {destinationDirectory}");
-                        
-                        var formattedFileName = torrentDetails.IsTvShow
-                            ? _fileFormatter.FormatTvShowFileName(archiveEntry.Key) 
+
+                        var formattedFileName = isTvShow
+                            ? _fileFormatter.FormatTvShowFileName(archiveEntry.Key)
                             : archiveEntry.Key;
 
                         File.Move($@"{destinationDirectory}\{archiveEntry.Key}", $@"{destinationDirectory}\{formattedFileName}");
