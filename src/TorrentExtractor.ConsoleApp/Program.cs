@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CommandLine;
 using MediatR;
 using Serilog;
-using TorrentExtractor.Core.Helpers;
 using TorrentExtractor.Core.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TorrentExtractor.Application.Commands;
 using TorrentExtractor.ConsoleApp.Helpers;
-using TorrentExtractor.ConsoleApp.Infrastructure;
 using TorrentExtractor.ConsoleApp.Models;
 using TorrentExtractor.Core.Settings;
 
@@ -26,64 +24,20 @@ namespace TorrentExtractor.ConsoleApp
         {
             Init();
 
-            var torrentSettings = ServiceProvider.GetService<TorrentSettings>();
-            var emailSettings = ServiceProvider.GetService<EmailSettings>();
-            var fileHandler = ServiceProvider.GetService<IFileHandler>();
-            var fileFinder = ServiceProvider.GetService<IFileFinder>();
-            var notify = ServiceProvider.GetService<INotificationService>();
-
             Log.Debug("Program Started");
+
+            var mediator = ServiceProvider.GetService<IMediator>();
 
             try
             {
                 var torrentOptions = GetTorrentOptions(args);
 
-                var isTvShow = torrentOptions.Category == torrentSettings.TvShowsCategory
-                               || (string.IsNullOrWhiteSpace(torrentOptions.Category)
-                                   && torrentSettings.DefaultCategory == torrentSettings.TvShowsCategory);
+                var command = new TorrentProcessDownload.Command(
+                    torrentOptions.Category,
+                    torrentOptions.ContentPath,
+                    torrentOptions.TorrentName);
 
-                var path = torrentOptions.ContentPath;
-
-                var isSingleFile = IsFile(torrentOptions.ContentPath);
-
-                var destinationFolder = isTvShow
-                    ? torrentSettings.TvShowsDirectory
-                    : torrentSettings.MoviesDirectory;
-
-                if (isSingleFile)
-                {
-                    if (FileHelper.IsMediaFile(torrentOptions.ContentPath, torrentSettings.SupportedFileFormats))
-                        fileHandler.CopyFile(torrentOptions.ContentPath, destinationFolder, isTvShow);
-                    else
-                        fileHandler.ExtractFile(torrentOptions.ContentPath, destinationFolder, isTvShow);
-                }
-                else
-                {
-                    var compressedFiles = fileFinder.FindCompressedFiles(torrentOptions.ContentPath);
-
-                    foreach (var file in compressedFiles)
-                    {
-                        fileHandler.ExtractFile(file, destinationFolder, isTvShow);
-                    }
-
-                    var mediaFiles = fileFinder.FindMediaFiles(torrentOptions.ContentPath, torrentSettings.SupportedFileFormats);
-
-                    foreach (var file in mediaFiles)
-                    {
-                        fileHandler.CopyFile(file, destinationFolder, isTvShow);
-                    }
-                }
-
-                var downloadName = string.IsNullOrWhiteSpace(torrentOptions.TorrentName)
-                    ? torrentOptions.ContentPath.Substring(torrentOptions.ContentPath.LastIndexOf("\\", StringComparison.Ordinal) + 1)
-                    : torrentOptions.TorrentName;
-
-                notify.SendEmail(new Email
-                {
-                    Recipients = emailSettings.ToAddresses,
-                    Subject = $"Download Finished - {downloadName}",
-                    Body = $"File(s) moved to {(isTvShow ? torrentSettings.TvShowsDirectory : torrentSettings.MoviesDirectory)}"
-                });
+                mediator.Send(command);
             }
             catch (Exception ex)
             {
@@ -165,13 +119,6 @@ namespace TorrentExtractor.ConsoleApp
             options.WithParsed(x => torrentOptions = x);
 
             return torrentOptions;
-        }
-
-        private static bool IsFile(string path)
-        {
-            var attr = File.GetAttributes(path);
-
-            return !attr.HasFlag(FileAttributes.Directory);
         }
     }
 }

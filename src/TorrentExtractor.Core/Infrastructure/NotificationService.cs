@@ -1,10 +1,10 @@
 using MailKit.Net.Smtp;
 using MimeKit;
 using Serilog;
-using TorrentExtractor.ConsoleApp.Models;
+using TorrentExtractor.Core.Models;
 using TorrentExtractor.Core.Settings;
 
-namespace TorrentExtractor.ConsoleApp.Infrastructure
+namespace TorrentExtractor.Core.Infrastructure
 {
     public class NotificationService : INotificationService
     {

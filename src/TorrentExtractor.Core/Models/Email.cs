@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TorrentExtractor.ConsoleApp.Models
+namespace TorrentExtractor.Core.Models
 {
     public class Email
     {
@@ -10,15 +10,15 @@ namespace TorrentExtractor.ConsoleApp.Models
             Bcc = new List<string>();
             Attachments = new List<string>();
         }
-        
+
         public string Subject { get; set; }
-        
+
         public string Body { get; set; }
-        
+
         public List<string> Recipients { get; set; }
-        
+
         public List<string> Bcc { get; set; }
-        
+
         public List<string> Attachments { get; set; }
     }
 }

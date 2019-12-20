@@ -8,17 +8,10 @@ namespace TorrentExtractor.Tests
 {
     public class FileNameFormatterTests
     {
-        public Mock<ILogger> MockLogger;
-
-        public FileNameFormatterTests()
-        {
-            MockLogger = new Mock<ILogger>();
-        }
-
         [Fact]
         public void FormatSeasonAndEpisode_Success()
         {
-            var fileFormatter = new FileFormatter(MockLogger.Object);
+            var fileFormatter = new FileFormatter();
 
             var formattedFileName1 = fileFormatter.FormatTvShowFileName("tv.show.5x02.hdtv-lol.mp4");
             var formattedFileName2 = fileFormatter.FormatTvShowFileName("tv.show.1101.hdtv-lol.mp4");
