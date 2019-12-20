@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Autofac;
 using CommandLine;
 using Serilog;
-using TorrentExtractor.Core.Autofac;
 using TorrentExtractor.Core.Helpers;
 using TorrentExtractor.Core.Infrastructure;
 using Microsoft.Extensions.Configuration;
-using TorrentExtractor.ConsoleApp.Autofac;
+using Microsoft.Extensions.DependencyInjection;
 using TorrentExtractor.ConsoleApp.Helpers;
 using TorrentExtractor.ConsoleApp.Infrastructure;
 using TorrentExtractor.ConsoleApp.Models;
@@ -21,48 +19,44 @@ namespace TorrentExtractor.ConsoleApp
     {
         public static IConfigurationRoot Configuration { get; set; }
 
+        public static IServiceProvider ServiceProvider { get; set; }
+
         private static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json");
+            Init();
 
-            Configuration = builder.Build();
+            var torrentSettings = ServiceProvider.GetService<TorrentSettings>();
+            var emailSettings = ServiceProvider.GetService<EmailSettings>();
+            var fileHandler = ServiceProvider.GetService<IFileHandler>();
+            var fileFinder = ServiceProvider.GetService<IFileFinder>();
+            var notify = ServiceProvider.GetService<INotificationService>();
 
-            var container = InitContainer();
-
-            var torrentSettings = container.Resolve<TorrentSettings>();
-            var emailSettings = container.Resolve<EmailSettings>();
-            var logger = container.Resolve<ILogger>();
-            var fileHandler = container.Resolve<IFileHandler>();
-            var fileFinder = container.Resolve<IFileFinder>();
-            var notify = container.Resolve<INotificationService>();
-
-            logger.Debug("Program Started");
+            Log.Debug("Program Started");
 
             try
             {
                 args = ArgsHelper.RemoveEmptyArgs(args);
 
                 if (args.Length > 0)
-                    logger.Debug("Args: {0}", string.Join(" ", args));
+                    Log.Debug("Args: {0}", string.Join(" ", args));
                 else
-                    logger.Information("No args provided");
+                    Log.Information("No args provided");
 
                 var options = Parser.Default.ParseArguments<TorrentOptions>(args);
 
                 if (options.Tag == ParserResultType.NotParsed)
                 {
-                    logger.Error("Error parsing arguments");
+                    Log.Error("Error parsing arguments");
 
                     var errors = new List<Error>();
                     options.WithNotParsed(x => errors = x.ToList());
 
                     foreach (var error in errors)
                     {
-                        logger.Error(error.ToString());
+                        Log.Error(error.ToString());
                     }
 
-                    logger.Information("Program Exited");
+                    Log.Information("Program Exited");
                     return;
                 }
 
@@ -119,22 +113,50 @@ namespace TorrentExtractor.ConsoleApp
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Error Extracting Files");
+                Log.Error(ex, "Error Extracting Files");
             }
 
-            logger.Debug("Program Finished!");
+            Log.Debug("Program Finished!");
         }
 
-        private static IContainer InitContainer()
+        private static void Init()
         {
-            var builder = new ContainerBuilder();
+            var configBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json");
 
-            builder.RegisterModule(new CoreModule());
-            builder.RegisterModule(new AppSettingsModule(Configuration));
-            builder.RegisterModule(new LoggerModule(Configuration));
-            builder.RegisterModule(new NotificationModule());
+            Configuration = configBuilder.Build();
 
-            return builder.Build();
+            IServiceCollection services = new ServiceCollection();
+
+            services.AddTransient<IFileFinder, FileFinder>();
+            services.AddTransient<IFileFormatter, FileFormatter>();
+            services.AddTransient<IFileHandler, FileHandler>();
+
+            var torrentSettings = new TorrentSettings();
+            var emailSettings = new EmailSettings();
+            var loggingSettings = new LoggingSettings();
+
+            Configuration.GetSection(nameof(TorrentSettings)).Bind(torrentSettings);
+            Configuration.GetSection(nameof(EmailSettings)).Bind(emailSettings);
+            Configuration.GetSection(nameof(LoggingSettings)).Bind(loggingSettings);
+
+            services.AddSingleton(ctx => torrentSettings);
+            services.AddSingleton(ctx => emailSettings);
+            services.AddSingleton(ctx => loggingSettings);
+
+            var logFilePath = Configuration["LoggingSettings:LogFilePath"];
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.RollingFile(logFilePath)
+                .WriteTo.ColoredConsole()
+                .CreateLogger();
+
+            Log.Information("Logger online");
+
+            services.AddTransient<INotificationService, NotificationService>();
+
+            ServiceProvider = services.BuildServiceProvider();
         }
 
         private static bool IsFile(string path)

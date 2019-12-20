@@ -9,19 +9,17 @@ namespace TorrentExtractor.ConsoleApp.Infrastructure
     public class NotificationService : INotificationService
     {
         private readonly EmailSettings _settings;
-        private readonly ILogger _logger;
 
-        public NotificationService(EmailSettings settings, ILogger logger)
+        public NotificationService(EmailSettings settings)
         {
             _settings = settings;
-            _logger = logger;
         }
 
         public void SendEmail(Email email)
         {
-            _logger.Debug("Enter SendEmail");
+            Log.Debug("Enter SendEmail");
 
-            _logger.Debug($"Recipients: {string.Join(", ", email.Recipients)}, Subject: {email.Subject}, Body: {email.Body}");
+            Log.Debug($"Recipients: {string.Join(", ", email.Recipients)}, Subject: {email.Subject}, Body: {email.Body}");
 
             // Compose a message
             var message = new MimeMessage();
@@ -40,7 +38,7 @@ namespace TorrentExtractor.ConsoleApp.Infrastructure
                 }
             }
 
-            var body = new TextPart { Text = email.Body};
+            var body = new TextPart { Text = email.Body };
 
             message.Subject = email.Subject;
             message.Body = body;
@@ -59,7 +57,7 @@ namespace TorrentExtractor.ConsoleApp.Infrastructure
                 client.Disconnect(true);
             }
 
-            _logger.Debug("Exit SendEmail");
+            Log.Debug("Exit SendEmail");
         }
     }
 }
