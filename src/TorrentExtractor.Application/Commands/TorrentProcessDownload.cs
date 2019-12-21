@@ -54,26 +54,14 @@ namespace TorrentExtractor.Application.Commands
 
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var files = new List<TorrentFile>();
+                var files = GetFiles(request.ContentPath);
 
-                var isSingleFile = IsFile(request.ContentPath);
+                var torrent = new Torrent(files, request.Category);
 
-                if (isSingleFile)
+                if (!torrent.IsTvShow && !torrent.IsMovie)
                 {
-                    files.Add(new TorrentFile(request.ContentPath));
+                    return Task.FromResult(Unit.Value);
                 }
-                else
-                {
-                    var torrentFiles = Directory.GetFiles(request.ContentPath);
-
-                    files.AddRange(torrentFiles.Select(torrentFile => new TorrentFile(torrentFile)));
-                }
-
-                var label = string.IsNullOrWhiteSpace(request.Category)
-                    ? _torrentSettings.DefaultCategory
-                    : _torrentSettings.TvShowsCategory;
-
-                var torrent = new Torrent(files, label);
 
                 var destinationFolder = torrent.IsTvShow
                     ? _torrentSettings.TvShowsDirectory
@@ -122,6 +110,26 @@ namespace TorrentExtractor.Application.Commands
                 var attr = File.GetAttributes(path);
 
                 return !attr.HasFlag(FileAttributes.Directory);
+            }
+
+            private IEnumerable<TorrentFile> GetFiles(string path)
+            {
+                var files = new List<TorrentFile>();
+
+                var isSingleFile = IsFile(path);
+
+                if (isSingleFile)
+                {
+                    files.Add(new TorrentFile(path));
+                }
+                else
+                {
+                    var torrentFiles = Directory.GetFiles(path);
+
+                    files.AddRange(torrentFiles.Select(torrentFile => new TorrentFile(torrentFile)));
+                }
+
+                return files;
             }
         }
     }
