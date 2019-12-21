@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -7,6 +9,7 @@ using TorrentExtractor.Core.Helpers;
 using TorrentExtractor.Core.Infrastructure;
 using TorrentExtractor.Core.Models;
 using TorrentExtractor.Core.Settings;
+using TorrentExtractor.Domain;
 
 namespace TorrentExtractor.Application.Commands
 {
@@ -52,17 +55,32 @@ namespace TorrentExtractor.Application.Commands
 
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var files = new List<TorrentFile>();
+
+                var isSingleFile = IsFile(request.ContentPath);
+
+                if (isSingleFile)
+                {
+                    files.Add(new TorrentFile(request.ContentPath));
+                }
+                else
+                {
+                    var torrentFiles = Directory.GetFiles(request.ContentPath);
+
+                    files.AddRange(torrentFiles.Select(torrentFile => new TorrentFile(torrentFile)));
+                }
+
                 var isTvShow = request.Category == _torrentSettings.TvShowsCategory
                                || (string.IsNullOrWhiteSpace(request.Category)
                                    && _torrentSettings.DefaultCategory == _torrentSettings.TvShowsCategory);
 
-                var isSingleFile = IsFile(request.ContentPath);
+                var torrent = new Torrent(files, request.Category, isTvShow);
 
                 var destinationFolder = isTvShow
                     ? _torrentSettings.TvShowsDirectory
                     : _torrentSettings.MoviesDirectory;
 
-                if (isSingleFile)
+                if (torrent.IsSingleFile)
                 {
                     if (FileHelper.IsMediaFile(request.ContentPath, _torrentSettings.SupportedFileFormats))
                         _fileHandler.CopyFile(request.ContentPath, destinationFolder, isTvShow);

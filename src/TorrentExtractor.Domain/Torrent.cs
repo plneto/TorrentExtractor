@@ -1,17 +1,23 @@
-﻿namespace TorrentExtractor.Domain
+﻿using System.Collections.Generic;
+using System.Linq;
+using TorrentExtractor.Domain.Infrastructure;
+
+namespace TorrentExtractor.Domain
 {
-    public class Torrent : IAggregateRoot
+    public class Torrent : Entity, IAggregateRoot
     {
-        public Torrent(string path, bool isSingleFile, bool isTvShow)
+        public Torrent(IEnumerable<TorrentFile> files, string label, bool isTvShow)
         {
-            Path = path;
-            IsSingleFile = isSingleFile;
+            Files = files;
+            Label = label;
             IsTvShow = isTvShow;
         }
 
-        public string Path { get; private set; }
+        public IEnumerable<TorrentFile> Files { get; private set; }
 
-        public bool IsSingleFile { get; private set; }
+        public string Label { get; private set; }
+
+        public bool IsSingleFile => Files.Count() == 1;
 
         public bool IsTvShow { get; private set; }
     }
