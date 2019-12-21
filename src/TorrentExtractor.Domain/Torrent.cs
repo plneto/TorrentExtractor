@@ -6,11 +6,10 @@ namespace TorrentExtractor.Domain
 {
     public class Torrent : Entity, IAggregateRoot
     {
-        public Torrent(IEnumerable<TorrentFile> files, string label, bool isTvShow)
+        public Torrent(IEnumerable<TorrentFile> files, string label)
         {
             Files = files;
             Label = label;
-            IsTvShow = isTvShow;
         }
 
         public IEnumerable<TorrentFile> Files { get; private set; }
@@ -19,6 +18,8 @@ namespace TorrentExtractor.Domain
 
         public bool IsSingleFile => Files.Count() == 1;
 
-        public bool IsTvShow { get; private set; }
+        public bool IsTvShow => Label.ToLower() == "tvshow";
+
+        public bool IsMovie => Label.ToLower() == "movie";
     }
 }

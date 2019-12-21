@@ -70,22 +70,22 @@ namespace TorrentExtractor.Application.Commands
                     files.AddRange(torrentFiles.Select(torrentFile => new TorrentFile(torrentFile)));
                 }
 
-                var isTvShow = request.Category == _torrentSettings.TvShowsCategory
-                               || (string.IsNullOrWhiteSpace(request.Category)
-                                   && _torrentSettings.DefaultCategory == _torrentSettings.TvShowsCategory);
+                var label = string.IsNullOrWhiteSpace(request.Category)
+                    ? _torrentSettings.DefaultCategory
+                    : _torrentSettings.TvShowsCategory;
 
-                var torrent = new Torrent(files, request.Category, isTvShow);
+                var torrent = new Torrent(files, label);
 
-                var destinationFolder = isTvShow
+                var destinationFolder = torrent.IsTvShow
                     ? _torrentSettings.TvShowsDirectory
                     : _torrentSettings.MoviesDirectory;
 
                 if (torrent.IsSingleFile)
                 {
                     if (FileHelper.IsMediaFile(request.ContentPath, _torrentSettings.SupportedFileFormats))
-                        _fileHandler.CopyFile(request.ContentPath, destinationFolder, isTvShow);
+                        _fileHandler.CopyFile(request.ContentPath, destinationFolder, torrent.IsTvShow);
                     else
-                        _fileHandler.ExtractFile(request.ContentPath, destinationFolder, isTvShow);
+                        _fileHandler.ExtractFile(request.ContentPath, destinationFolder, torrent.IsTvShow);
                 }
                 else
                 {
@@ -93,14 +93,14 @@ namespace TorrentExtractor.Application.Commands
 
                     foreach (var file in compressedFiles)
                     {
-                        _fileHandler.ExtractFile(file, destinationFolder, isTvShow);
+                        _fileHandler.ExtractFile(file, destinationFolder, torrent.IsTvShow);
                     }
 
                     var mediaFiles = _fileFinder.FindMediaFiles(request.ContentPath, _torrentSettings.SupportedFileFormats);
 
                     foreach (var file in mediaFiles)
                     {
-                        _fileHandler.CopyFile(file, destinationFolder, isTvShow);
+                        _fileHandler.CopyFile(file, destinationFolder, torrent.IsTvShow);
                     }
                 }
 
@@ -112,7 +112,7 @@ namespace TorrentExtractor.Application.Commands
                 {
                     Recipients = _emailSettings.ToAddresses,
                     Subject = $"Download Finished - {downloadName}",
-                    Body = $"File(s) moved to {(isTvShow ? _torrentSettings.TvShowsDirectory : _torrentSettings.MoviesDirectory)}"
+                    Body = $"File(s) moved to {(torrent.IsTvShow ? _torrentSettings.TvShowsDirectory : _torrentSettings.MoviesDirectory)}"
                 });
 
                 return Task.FromResult(Unit.Value);
