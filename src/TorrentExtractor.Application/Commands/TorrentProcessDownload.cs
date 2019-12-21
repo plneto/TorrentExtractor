@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using TorrentExtractor.Core.Helpers;
 using TorrentExtractor.Core.Infrastructure;
 using TorrentExtractor.Core.Models;
 using TorrentExtractor.Core.Settings;
@@ -82,7 +81,7 @@ namespace TorrentExtractor.Application.Commands
 
                 if (torrent.IsSingleFile)
                 {
-                    if (FileHelper.IsMediaFile(request.ContentPath, _torrentSettings.SupportedFileFormats))
+                    if (_fileFinder.IsMediaFile(torrent.Files.Single().Path))
                         _fileHandler.CopyFile(request.ContentPath, destinationFolder, torrent.IsTvShow);
                     else
                         _fileHandler.ExtractFile(request.ContentPath, destinationFolder, torrent.IsTvShow);
@@ -96,7 +95,7 @@ namespace TorrentExtractor.Application.Commands
                         _fileHandler.ExtractFile(file, destinationFolder, torrent.IsTvShow);
                     }
 
-                    var mediaFiles = _fileFinder.FindMediaFiles(request.ContentPath, _torrentSettings.SupportedFileFormats);
+                    var mediaFiles = _fileFinder.FindMediaFiles(request.ContentPath);
 
                     foreach (var file in mediaFiles)
                     {

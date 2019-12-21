@@ -1,15 +1,22 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TorrentExtractor.Core.Helpers;
+using TorrentExtractor.Core.Settings;
 
 namespace TorrentExtractor.Core.Infrastructure
 {
     public class FileFinder : IFileFinder
     {
-        public List<string> FindMediaFiles(string path, List<string> supportedMediaFiles)
+        private readonly TorrentSettings _torrentSettings;
+
+        public FileFinder(TorrentSettings torrentSettings)
         {
-            return GetMediaFiles(path, new List<string>(), supportedMediaFiles);
+            _torrentSettings = torrentSettings;
+        }
+
+        public List<string> FindMediaFiles(string path)
+        {
+            return GetMediaFiles(path, new List<string>());
         }
 
         public List<string> FindCompressedFiles(string path)
@@ -17,21 +24,27 @@ namespace TorrentExtractor.Core.Infrastructure
             return GetRarFiles(path, new List<string>());
         }
 
-        private List<string> GetMediaFiles(string directory, List<string> list, List<string> supportedMediaFiles)
+        public bool IsMediaFile(string file)
+        {
+            return _torrentSettings.SupportedFileFormats
+                    .Contains(file.Substring(file.LastIndexOf('.')));
+        }
+
+        private List<string> GetMediaFiles(string directory, List<string> list)
         {
             // get media files from main directory
             list.AddRange(Directory.GetFiles(directory)
-                .Where(file => FileHelper.IsMediaFile(file, supportedMediaFiles) && !file.ToLower().Contains("sample")).ToList());
+                .Where(file => IsMediaFile(file) && !file.ToLower().Contains("sample")).ToList());
 
             // get media files from sub directories recursively
             foreach (var dir in Directory.GetDirectories(directory))
             {
                 list.AddRange(from subDir in Directory.GetDirectories(dir)
                               from file in Directory.GetFiles(subDir)
-                              where FileHelper.IsMediaFile(file, supportedMediaFiles) && !file.ToLower().Contains("sample")
+                              where IsMediaFile(file) && !file.ToLower().Contains("sample")
                               select file);
 
-                GetMediaFiles(dir, list, supportedMediaFiles);
+                GetMediaFiles(dir, list);
             }
 
             return list;
