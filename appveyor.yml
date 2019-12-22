@@ -10,3 +10,9 @@ build_script:
 
 test_script:
     - dotnet test ".\src\TorrentExtractor.sln"
+    
+after_build:   
+    - dotnet publish  ".\src\TorrentExtractor.ConsoleApp\TorrentExtractor.ConsoleApp.csproj" -c release -r win10-x64
+    
+artifacts:
+    - path: ".\src\TorrentExtractor.ConsoleApp\bin\release\netcoreapp3.1\win10-x64\publish"
