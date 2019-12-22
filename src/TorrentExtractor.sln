@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1B6FDD18
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Application", "TorrentExtractor.Application\TorrentExtractor.Application.csproj", "{ED013BDC-2E97-4050-8A4E-8E2DE951233C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentExtractor.Domain.Tests", "TorrentExtractor.Domain.Tests\TorrentExtractor.Domain.Tests.csproj", "{48C3C988-0139-44AD-80CF-29138BA55F7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,12 +43,17 @@ Global
 		{ED013BDC-2E97-4050-8A4E-8E2DE951233C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED013BDC-2E97-4050-8A4E-8E2DE951233C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED013BDC-2E97-4050-8A4E-8E2DE951233C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48C3C988-0139-44AD-80CF-29138BA55F7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48C3C988-0139-44AD-80CF-29138BA55F7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48C3C988-0139-44AD-80CF-29138BA55F7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48C3C988-0139-44AD-80CF-29138BA55F7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8DBF8E59-7292-43BF-AF06-AC2CABACD10D} = {1B6FDD18-346A-4B07-B24A-F171AC5AA6E6}
+		{48C3C988-0139-44AD-80CF-29138BA55F7B} = {1B6FDD18-346A-4B07-B24A-F171AC5AA6E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {82BCC6A2-5457-405F-AE18-C71F18C309AA}

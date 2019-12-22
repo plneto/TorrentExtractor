@@ -24,8 +24,6 @@ namespace TorrentExtractor.Domain
 
         public string Label { get; private set; }
 
-        public bool IsSingleFile => Files.Count() == 1;
-
         public bool IsTvShow => Label.ToLower() == TvShowLabel;
 
         public bool IsMovie => Label.ToLower() == MovieLabel;
