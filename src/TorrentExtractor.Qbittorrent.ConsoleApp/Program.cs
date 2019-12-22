@@ -30,12 +30,12 @@ namespace TorrentExtractor.Qbittorrent.ConsoleApp
 
             try
             {
-                var torrentOptions = GetTorrentOptions(args);
+                var qbittorrentOptions = GetQbittorrentOptions(args);
 
                 var command = new TorrentProcessDownload.Command(
-                    torrentOptions.Category,
-                    torrentOptions.ContentPath,
-                    torrentOptions.TorrentName);
+                    qbittorrentOptions.Category,
+                    qbittorrentOptions.ContentPath,
+                    qbittorrentOptions.TorrentName);
 
                 mediator.Send(command);
             }
@@ -87,7 +87,7 @@ namespace TorrentExtractor.Qbittorrent.ConsoleApp
             ServiceProvider = services.BuildServiceProvider();
         }
 
-        public static QbittorrentOptions GetTorrentOptions(string[] args)
+        public static QbittorrentOptions GetQbittorrentOptions(string[] args)
         {
             args = ArgsHelper.RemoveEmptyArgs(args);
 
@@ -113,11 +113,11 @@ namespace TorrentExtractor.Qbittorrent.ConsoleApp
                 throw new Exception("Failed to parse arguments");
             }
 
-            var torrentOptions = new QbittorrentOptions();
+            var qbittorrentOptions = new QbittorrentOptions();
 
-            options.WithParsed(x => torrentOptions = x);
+            options.WithParsed(x => qbittorrentOptions = x);
 
-            return torrentOptions;
+            return qbittorrentOptions;
         }
     }
 }
