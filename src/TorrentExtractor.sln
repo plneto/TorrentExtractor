@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.ConsoleApp", "TorrentExtractor.ConsoleApp\TorrentExtractor.ConsoleApp.csproj", "{4D8D6AE4-D112-482D-9884-78483CEB9EBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Qbittorrent.ConsoleApp", "TorrentExtractor.Qbittorrent.ConsoleApp\TorrentExtractor.Qbittorrent.ConsoleApp.csproj", "{4D8D6AE4-D112-482D-9884-78483CEB9EBC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Core", "TorrentExtractor.Core\TorrentExtractor.Core.csproj", "{A5CA3FB5-D34B-473C-AEC3-2CD93CB77472}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Tests", "TorrentExtractor.Tests\TorrentExtractor.Tests.csproj", "{8DBF8E59-7292-43BF-AF06-AC2CABACD10D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentExtractor.Domain", "TorrentExtractor.Domain\TorrentExtractor.Domain.csproj", "{0F805936-EB50-401D-8F9C-54F99638A75E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Domain", "TorrentExtractor.Domain\TorrentExtractor.Domain.csproj", "{0F805936-EB50-401D-8F9C-54F99638A75E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1B6FDD18-346A-4B07-B24A-F171AC5AA6E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorrentExtractor.Application", "TorrentExtractor.Application\TorrentExtractor.Application.csproj", "{ED013BDC-2E97-4050-8A4E-8E2DE951233C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Application", "TorrentExtractor.Application\TorrentExtractor.Application.csproj", "{ED013BDC-2E97-4050-8A4E-8E2DE951233C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

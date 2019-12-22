@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace TorrentExtractor.ConsoleApp.Helpers
+namespace TorrentExtractor.Qbittorrent.ConsoleApp.Helpers
 {
     public static class ArgsHelper
     {

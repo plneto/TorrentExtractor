@@ -8,11 +8,11 @@ using TorrentExtractor.Core.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TorrentExtractor.Application.Commands;
-using TorrentExtractor.ConsoleApp.Helpers;
-using TorrentExtractor.ConsoleApp.Models;
+using TorrentExtractor.Qbittorrent.ConsoleApp.Helpers;
+using TorrentExtractor.Qbittorrent.ConsoleApp.Models;
 using TorrentExtractor.Core.Settings;
 
-namespace TorrentExtractor.ConsoleApp
+namespace TorrentExtractor.Qbittorrent.ConsoleApp
 {
     internal class Program
     {
@@ -87,7 +87,7 @@ namespace TorrentExtractor.ConsoleApp
             ServiceProvider = services.BuildServiceProvider();
         }
 
-        public static TorrentOptions GetTorrentOptions(string[] args)
+        public static QbittorrentOptions GetTorrentOptions(string[] args)
         {
             args = ArgsHelper.RemoveEmptyArgs(args);
 
@@ -96,7 +96,7 @@ namespace TorrentExtractor.ConsoleApp
             else
                 Log.Information("No args provided");
 
-            var options = Parser.Default.ParseArguments<TorrentOptions>(args);
+            var options = Parser.Default.ParseArguments<QbittorrentOptions>(args);
 
             if (options.Tag == ParserResultType.NotParsed)
             {
@@ -113,7 +113,7 @@ namespace TorrentExtractor.ConsoleApp
                 throw new Exception("Failed to parse arguments");
             }
 
-            var torrentOptions = new TorrentOptions();
+            var torrentOptions = new QbittorrentOptions();
 
             options.WithParsed(x => torrentOptions = x);
 
