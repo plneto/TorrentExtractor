@@ -80,7 +80,6 @@ namespace TorrentExtractor.ConsoleApp
 
             services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
 
-            services.AddTransient<IFileFinder, FileFinder>();
             services.AddTransient<IFileFormatter, FileFormatter>();
             services.AddTransient<IFileHandler, FileHandler>();
             services.AddTransient<INotificationService, NotificationService>();

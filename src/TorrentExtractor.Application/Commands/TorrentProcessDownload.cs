@@ -33,20 +33,17 @@ namespace TorrentExtractor.Application.Commands
         public class Handler : IRequestHandler<Command>
         {
             private readonly IFileHandler _fileHandler;
-            private readonly IFileFinder _fileFinder;
             private readonly INotificationService _notificationService;
             private readonly TorrentSettings _torrentSettings;
             private readonly EmailSettings _emailSettings;
 
             public Handler(
                 IFileHandler fileHandler,
-                IFileFinder fileFinder,
                 INotificationService notificationService,
                 TorrentSettings torrentSettings,
                 EmailSettings emailSettings)
             {
                 _fileHandler = fileHandler;
-                _fileFinder = fileFinder;
                 _notificationService = notificationService;
                 _torrentSettings = torrentSettings;
                 _emailSettings = emailSettings;
@@ -56,7 +53,7 @@ namespace TorrentExtractor.Application.Commands
             {
                 var files = GetFiles(request.ContentPath);
 
-                var torrent = new Torrent(files, request.Category);
+                var torrent = new Torrent(request.TorrentName, files, request.Category);
 
                 if (!torrent.IsTvShow && !torrent.IsMovie)
                 {
@@ -67,62 +64,35 @@ namespace TorrentExtractor.Application.Commands
                     ? _torrentSettings.TvShowsDirectory
                     : _torrentSettings.MoviesDirectory;
 
-                if (torrent.IsSingleFile)
+                foreach (var mediaFile in torrent.MediaFiles)
                 {
-                    if (_fileFinder.IsMediaFile(torrent.Files.Single().Path))
-                        _fileHandler.CopyFile(request.ContentPath, destinationFolder, torrent.IsTvShow);
-                    else
-                        _fileHandler.ExtractFile(request.ContentPath, destinationFolder, torrent.IsTvShow);
-                }
-                else
-                {
-                    var compressedFiles = _fileFinder.FindCompressedFiles(request.ContentPath);
-
-                    foreach (var file in compressedFiles)
-                    {
-                        _fileHandler.ExtractFile(file, destinationFolder, torrent.IsTvShow);
-                    }
-
-                    var mediaFiles = _fileFinder.FindMediaFiles(request.ContentPath);
-
-                    foreach (var file in mediaFiles)
-                    {
-                        _fileHandler.CopyFile(file, destinationFolder, torrent.IsTvShow);
-                    }
+                    _fileHandler.CopyFile(mediaFile.Path, destinationFolder, torrent.IsTvShow);
                 }
 
-                var downloadName = string.IsNullOrWhiteSpace(request.TorrentName)
-                    ? request.ContentPath.Substring(request.ContentPath.LastIndexOf("\\", StringComparison.Ordinal) + 1)
-                    : request.TorrentName;
+                foreach (var compressedFile in torrent.CompressedFiles)
+                {
+                    _fileHandler.ExtractFile(compressedFile.Path, destinationFolder, torrent.IsTvShow);
+                }
 
                 _notificationService.SendEmail(new Email
                 {
                     Recipients = _emailSettings.ToAddresses,
-                    Subject = $"Download Finished - {downloadName}",
-                    Body = $"File(s) moved to {(torrent.IsTvShow ? _torrentSettings.TvShowsDirectory : _torrentSettings.MoviesDirectory)}"
+                    Subject = $"Download Finished - {torrent.Name}",
+                    Body = $"File(s) moved to {destinationFolder}"
                 });
 
                 return Task.FromResult(Unit.Value);
             }
 
-            private static bool IsFile(string path)
-            {
-                var attr = File.GetAttributes(path);
-
-                return !attr.HasFlag(FileAttributes.Directory);
-            }
-
-            private IEnumerable<TorrentFile> GetFiles(string path)
+            private static IEnumerable<TorrentFile> GetFiles(string path)
             {
                 var files = new List<TorrentFile>();
 
-                var isSingleFile = IsFile(path);
-
-                if (isSingleFile)
+                if (File.Exists(path))
                 {
                     files.Add(new TorrentFile(path));
                 }
-                else
+                else if (Directory.Exists(path))
                 {
                     var torrentFiles = Directory.GetFiles(path);
 

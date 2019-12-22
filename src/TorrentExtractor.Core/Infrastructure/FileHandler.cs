@@ -46,7 +46,7 @@ namespace TorrentExtractor.Core.Infrastructure
             return success;
         }
 
-        public bool ExtractFile(string file, string destinationDirectory, bool isTvShow)
+        public bool ExtractFile(string file, string destinationFolder, bool isTvShow)
         {
             Log.Debug("Enter ExtractFile");
 
@@ -58,14 +58,14 @@ namespace TorrentExtractor.Core.Infrastructure
                 {
                     try
                     {
-                        archiveEntry.WriteToDirectory(destinationDirectory);
-                        Log.Debug($"File {file} extracted to {destinationDirectory}");
+                        archiveEntry.WriteToDirectory(destinationFolder);
+                        Log.Debug($"File {file} extracted to {destinationFolder}");
 
                         var formattedFileName = isTvShow
                             ? _fileFormatter.FormatTvShowFileName(archiveEntry.Key)
                             : archiveEntry.Key;
 
-                        File.Move($@"{destinationDirectory}\{archiveEntry.Key}", $@"{destinationDirectory}\{formattedFileName}");
+                        File.Move($@"{destinationFolder}\{archiveEntry.Key}", $@"{destinationFolder}\{formattedFileName}");
 
                         success = true;
                     }

@@ -6,11 +6,19 @@ namespace TorrentExtractor.Domain
 {
     public class Torrent : Entity, IAggregateRoot
     {
-        public Torrent(IEnumerable<TorrentFile> files, string label)
+        private const string TvShowLabel = "tvshow";
+        private const string MovieLabel = "movie";
+        private readonly string[] _supportedCompressionFormats = { ".rar" };
+        private readonly string[] _supportedMediaFormats = { ".avi", ".mp4", ".mkv" };
+
+        public Torrent(string name, IEnumerable<TorrentFile> files, string label)
         {
-            Files = files;
+            Name = name;
+            Files = files.Where(x => !x.Path.ToLower().Contains("sample"));
             Label = label;
         }
+
+        public string Name { get; private set; }
 
         public IEnumerable<TorrentFile> Files { get; private set; }
 
@@ -18,8 +26,14 @@ namespace TorrentExtractor.Domain
 
         public bool IsSingleFile => Files.Count() == 1;
 
-        public bool IsTvShow => Label.ToLower() == "tvshow";
+        public bool IsTvShow => Label.ToLower() == TvShowLabel;
 
-        public bool IsMovie => Label.ToLower() == "movie";
+        public bool IsMovie => Label.ToLower() == MovieLabel;
+
+        public IEnumerable<TorrentFile> CompressedFiles => Files
+            .Where(x => _supportedCompressionFormats.Contains(x.Extension));
+
+        public IEnumerable<TorrentFile> MediaFiles => Files
+            .Where(x => _supportedMediaFormats.Contains(x.Extension));
     }
 }

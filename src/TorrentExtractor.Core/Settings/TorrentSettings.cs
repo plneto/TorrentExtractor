@@ -7,7 +7,5 @@ namespace TorrentExtractor.Core.Settings
         public string TvShowsDirectory { get; set; }
 
         public string MoviesDirectory { get; set; }
-
-        public List<string> SupportedFileFormats { get; set; }
     }
 }

@@ -12,6 +12,8 @@ namespace TorrentExtractor.Domain
 
         public string Path { get; }
 
+        public string Extension => Path.Substring(Path.LastIndexOf('.'));
+
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return Path;
