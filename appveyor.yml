@@ -1,0 +1,12 @@
+version: 1.0.{build}
+
+image: Visual Studio 2019
+
+before_build:
+    - dotnet restore ".\src\TorrentExtractor.sln"
+
+build_script:
+    - dotnet build ".\src\TorrentExtractor.sln"
+
+test_script:
+    - dotnet test ".\src\TorrentExtractor.sln"
