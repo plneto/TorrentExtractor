@@ -12,7 +12,7 @@ test_script:
     - dotnet test ".\src\TorrentExtractor.sln"
     
 after_build:   
-    - dotnet publish  ".\src\TorrentExtractor.ConsoleApp\TorrentExtractor.Qbittorrent.ConsoleApp.csproj" -c release -r win10-x64
+    - dotnet publish  ".\src\TorrentExtractor.Qbittorrent.ConsoleApp\TorrentExtractor.Qbittorrent.ConsoleApp.csproj" -c release -r win10-x64
     
 artifacts:
     - path: .\src\TorrentExtractor.Qbittorrent.ConsoleApp\bin\release\netcoreapp3.1\win10-x64\publish
