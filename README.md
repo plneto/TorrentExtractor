@@ -4,7 +4,6 @@ This app is to be used as the external program that executes on torrent completi
 
 It has been tested with the following torrent clients:
 - qBittorrent
-- uTorrent
 
 ---
 
