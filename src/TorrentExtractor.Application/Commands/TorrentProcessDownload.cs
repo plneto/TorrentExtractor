@@ -94,7 +94,10 @@ namespace TorrentExtractor.Application.Commands
                 }
                 else if (Directory.Exists(path))
                 {
-                    var torrentFiles = Directory.GetFiles(path);
+                    var torrentFiles = Directory.EnumerateFiles(
+                        path,
+                        "*.*",
+                        SearchOption.AllDirectories);
 
                     files.AddRange(torrentFiles.Select(torrentFile => new TorrentFile(torrentFile)));
                 }
