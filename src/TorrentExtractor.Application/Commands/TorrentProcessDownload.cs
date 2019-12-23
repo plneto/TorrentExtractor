@@ -9,6 +9,8 @@ using TorrentExtractor.Core.Infrastructure;
 using TorrentExtractor.Core.Models;
 using TorrentExtractor.Core.Settings;
 using TorrentExtractor.Domain;
+using TorrentExtractor.Domain.Events;
+using TorrentExtractor.Domain.Extensions;
 
 namespace TorrentExtractor.Application.Commands
 {
@@ -32,24 +34,27 @@ namespace TorrentExtractor.Application.Commands
 
         public class Handler : IRequestHandler<Command>
         {
+            private readonly IMediator _mediator;
             private readonly IFileHandler _fileHandler;
             private readonly INotificationService _notificationService;
             private readonly TorrentSettings _torrentSettings;
             private readonly EmailSettings _emailSettings;
 
             public Handler(
+                IMediator mediator,
                 IFileHandler fileHandler,
                 INotificationService notificationService,
                 TorrentSettings torrentSettings,
                 EmailSettings emailSettings)
             {
+                _mediator = mediator;
                 _fileHandler = fileHandler;
                 _notificationService = notificationService;
                 _torrentSettings = torrentSettings;
                 _emailSettings = emailSettings;
             }
 
-            public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var files = GetFiles(request.ContentPath);
 
@@ -57,7 +62,7 @@ namespace TorrentExtractor.Application.Commands
 
                 if (!torrent.IsTvShow && !torrent.IsMovie)
                 {
-                    return Task.FromResult(Unit.Value);
+                    return Unit.Value;
                 }
 
                 var destinationFolder = torrent.IsTvShow
@@ -74,14 +79,10 @@ namespace TorrentExtractor.Application.Commands
                     _fileHandler.ExtractFile(compressedFile.Path, destinationFolder, torrent.IsTvShow);
                 }
 
-                _notificationService.SendEmail(new Email
-                {
-                    Recipients = _emailSettings.ToAddresses,
-                    Subject = $"Download Finished - {torrent.Name}",
-                    Body = $"File(s) moved to {destinationFolder}"
-                });
+                torrent.AddDomainEvent(new TorrentProcessedEvent(torrent.Name, destinationFolder));
+                await _mediator.DispatchDomainEventsAsync(torrent);
 
-                return Task.FromResult(Unit.Value);
+                return Unit.Value;
             }
 
             private static IEnumerable<TorrentFile> GetFiles(string path)
