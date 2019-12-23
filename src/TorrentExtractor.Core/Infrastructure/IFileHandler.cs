@@ -1,9 +1,15 @@
-﻿namespace TorrentExtractor.Core.Infrastructure
+﻿using System.Collections.Generic;
+
+namespace TorrentExtractor.Core.Infrastructure
 {
     public interface IFileHandler
     {
-        bool CopyFile(string fileOrigin, string destination, bool isTvShow);
+        void CopyFile(string filePath, string destinationFolder);
 
-        bool ExtractFile(string file, string destinationFolder, bool isTvShow);
+        void ExtractFile(string filePath, string destinationFolder);
+
+        void RenameFile(string filePath, string newFilename);
+
+        IEnumerable<string> GetRarArchiveFilenames(string filePath);
     }
 }

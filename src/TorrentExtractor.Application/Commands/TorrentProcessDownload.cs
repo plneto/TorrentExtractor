@@ -9,8 +9,10 @@ using TorrentExtractor.Core.Infrastructure;
 using TorrentExtractor.Core.Models;
 using TorrentExtractor.Core.Settings;
 using TorrentExtractor.Domain;
+using TorrentExtractor.Domain.AggregateModels.TorrentAggregate;
 using TorrentExtractor.Domain.Events;
 using TorrentExtractor.Domain.Extensions;
+using TorrentExtractor.Domain.Services;
 
 namespace TorrentExtractor.Application.Commands
 {
@@ -36,22 +38,19 @@ namespace TorrentExtractor.Application.Commands
         {
             private readonly IMediator _mediator;
             private readonly IFileHandler _fileHandler;
-            private readonly INotificationService _notificationService;
             private readonly TorrentSettings _torrentSettings;
-            private readonly EmailSettings _emailSettings;
+            private readonly ITorrentDomainService _torrentDomainService;
 
             public Handler(
                 IMediator mediator,
                 IFileHandler fileHandler,
-                INotificationService notificationService,
                 TorrentSettings torrentSettings,
-                EmailSettings emailSettings)
+                ITorrentDomainService torrentDomainService)
             {
                 _mediator = mediator;
                 _fileHandler = fileHandler;
-                _notificationService = notificationService;
                 _torrentSettings = torrentSettings;
-                _emailSettings = emailSettings;
+                _torrentDomainService = torrentDomainService;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -71,12 +70,30 @@ namespace TorrentExtractor.Application.Commands
 
                 foreach (var mediaFile in torrent.MediaFiles)
                 {
-                    _fileHandler.CopyFile(mediaFile.Path, destinationFolder, torrent.IsTvShow);
+                    _fileHandler.CopyFile(mediaFile.Path, destinationFolder);
+
+                    if (!torrent.IsTvShow) continue;
+
+                    var newDestination = Path.Combine(destinationFolder, mediaFile.FileName);
+                    var formattedName = _torrentDomainService.GetFormattedTvShowFileName(mediaFile.FileName);
+
+                    _fileHandler.RenameFile(newDestination, formattedName);
                 }
 
                 foreach (var compressedFile in torrent.CompressedFiles)
                 {
-                    _fileHandler.ExtractFile(compressedFile.Path, destinationFolder, torrent.IsTvShow);
+                    _fileHandler.ExtractFile(compressedFile.Path, destinationFolder);
+
+                    if (!torrent.IsTvShow) continue;
+
+                    var rarArchiveFiles = _fileHandler.GetRarArchiveFilenames(compressedFile.Path);
+
+                    foreach (var rarArchiveFile in rarArchiveFiles)
+                    {
+                        var extractedFile = Path.Combine(destinationFolder, rarArchiveFile);
+                        var formattedName = _torrentDomainService.GetFormattedTvShowFileName(rarArchiveFile);
+                        _fileHandler.RenameFile(extractedFile, formattedName);
+                    }
                 }
 
                 torrent.AddDomainEvent(new TorrentProcessedEvent(torrent.Name, destinationFolder));

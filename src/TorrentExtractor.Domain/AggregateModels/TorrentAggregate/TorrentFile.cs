@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using TorrentExtractor.Domain.Infrastructure;
 
-namespace TorrentExtractor.Domain
+namespace TorrentExtractor.Domain.AggregateModels.TorrentAggregate
 {
     public class TorrentFile : ValueObject
     {
@@ -12,7 +12,9 @@ namespace TorrentExtractor.Domain
 
         public string Path { get; }
 
-        public string Extension => Path.Substring(Path.LastIndexOf('.'));
+        public string FileName => System.IO.Path.GetFileName(Path);
+
+        public string Extension => System.IO.Path.GetExtension(Path);
 
         protected override IEnumerable<object> GetAtomicValues()
         {

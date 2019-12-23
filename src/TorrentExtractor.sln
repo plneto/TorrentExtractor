@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Qbittorren
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Core", "TorrentExtractor.Core\TorrentExtractor.Core.csproj", "{A5CA3FB5-D34B-473C-AEC3-2CD93CB77472}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Tests", "TorrentExtractor.Tests\TorrentExtractor.Tests.csproj", "{8DBF8E59-7292-43BF-AF06-AC2CABACD10D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorrentExtractor.Domain", "TorrentExtractor.Domain\TorrentExtractor.Domain.csproj", "{0F805936-EB50-401D-8F9C-54F99638A75E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1B6FDD18-346A-4B07-B24A-F171AC5AA6E6}"
@@ -31,10 +29,6 @@ Global
 		{A5CA3FB5-D34B-473C-AEC3-2CD93CB77472}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5CA3FB5-D34B-473C-AEC3-2CD93CB77472}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5CA3FB5-D34B-473C-AEC3-2CD93CB77472}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8DBF8E59-7292-43BF-AF06-AC2CABACD10D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8DBF8E59-7292-43BF-AF06-AC2CABACD10D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8DBF8E59-7292-43BF-AF06-AC2CABACD10D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8DBF8E59-7292-43BF-AF06-AC2CABACD10D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F805936-EB50-401D-8F9C-54F99638A75E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F805936-EB50-401D-8F9C-54F99638A75E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F805936-EB50-401D-8F9C-54F99638A75E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,7 +46,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{8DBF8E59-7292-43BF-AF06-AC2CABACD10D} = {1B6FDD18-346A-4B07-B24A-F171AC5AA6E6}
 		{48C3C988-0139-44AD-80CF-29138BA55F7B} = {1B6FDD18-346A-4B07-B24A-F171AC5AA6E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

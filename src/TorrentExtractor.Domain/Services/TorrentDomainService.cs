@@ -1,15 +1,15 @@
 ﻿using System.Text.RegularExpressions;
 using Serilog;
 
-namespace TorrentExtractor.Core.Infrastructure
+namespace TorrentExtractor.Domain.Services
 {
-    public class FileFormatter : IFileFormatter
+    public class TorrentDomainService : ITorrentDomainService
     {
         public static Regex RegexMultipleSeasonEpisodeFormats = new Regex(@"(.*?)\.[sS]?(\d{1,2})x?[eE]?(\d{2})\.(.*)", RegexOptions.IgnoreCase);
         public static Regex RegexSeasonEpisodeSxxExxFormat = new Regex(@"[sS](\d{1,2})[eE]?(\d{2})", RegexOptions.IgnoreCase);
         public static Regex RegexMultipleNumbers = new Regex(@"(.*?)\.[sS]?(\d{1,2})x?[eE]?(\d{2})\.(\d{3,4})(.*)", RegexOptions.IgnoreCase);
 
-        public string FormatTvShowFileName(string fileName)
+        public string GetFormattedTvShowFileName(string fileName)
         {
             Log.Debug("Enter Format File Name");
 

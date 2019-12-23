@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
+using TorrentExtractor.Domain.AggregateModels.TorrentAggregate;
 using Xunit;
 
-namespace TorrentExtractor.Domain.Tests
+namespace TorrentExtractor.Domain.Tests.AggregateModels.TorrentAggregate
 {
     public class TorrentTests
     {

@@ -11,6 +11,7 @@ using TorrentExtractor.Application.Commands;
 using TorrentExtractor.Qbittorrent.ConsoleApp.Helpers;
 using TorrentExtractor.Qbittorrent.ConsoleApp.Models;
 using TorrentExtractor.Core.Settings;
+using TorrentExtractor.Domain.Services;
 
 namespace TorrentExtractor.Qbittorrent.ConsoleApp
 {
@@ -80,7 +81,7 @@ namespace TorrentExtractor.Qbittorrent.ConsoleApp
 
             services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
 
-            services.AddTransient<IFileFormatter, FileFormatter>();
+            services.AddTransient<ITorrentDomainService, TorrentDomainService>();
             services.AddTransient<IFileHandler, FileHandler>();
             services.AddTransient<INotificationService, NotificationService>();
 

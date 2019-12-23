@@ -2,7 +2,7 @@
 using System.Linq;
 using TorrentExtractor.Domain.Infrastructure;
 
-namespace TorrentExtractor.Domain
+namespace TorrentExtractor.Domain.AggregateModels.TorrentAggregate
 {
     public class Torrent : Entity, IAggregateRoot
     {
