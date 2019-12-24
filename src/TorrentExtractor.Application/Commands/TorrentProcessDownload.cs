@@ -75,9 +75,13 @@ namespace TorrentExtractor.Application.Commands
                     if (!torrent.IsTvShow) continue;
 
                     var newDestination = Path.Combine(destinationFolder, mediaFile.FileName);
-                    var formattedName = _torrentDomainService.GetFormattedTvShowFileName(mediaFile.FileName);
+                    var formattedName = _torrentDomainService
+                        .GetFormattedTvShowFileName(mediaFile.FileName);
 
-                    _fileHandler.RenameFile(newDestination, formattedName);
+                    if (!mediaFile.FileName.Equals(formattedName))
+                    {
+                        _fileHandler.RenameFile(newDestination, formattedName);
+                    }
                 }
 
                 foreach (var compressedFile in torrent.CompressedFiles)
@@ -91,8 +95,13 @@ namespace TorrentExtractor.Application.Commands
                     foreach (var rarArchiveFile in rarArchiveFiles)
                     {
                         var extractedFile = Path.Combine(destinationFolder, rarArchiveFile);
-                        var formattedName = _torrentDomainService.GetFormattedTvShowFileName(rarArchiveFile);
-                        _fileHandler.RenameFile(extractedFile, formattedName);
+                        var formattedName = _torrentDomainService
+                            .GetFormattedTvShowFileName(rarArchiveFile);
+
+                        if (!rarArchiveFile.Equals(formattedName))
+                        {
+                            _fileHandler.RenameFile(extractedFile, formattedName);
+                        }
                     }
                 }
 
